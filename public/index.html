@@ -1,323 +1,449 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการองค์กร - Organization Management</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ระบบจัดการข้อมูล - Organization Management</title>
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
 
     <!-- Styles -->
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
     <!-- Animated Background -->
     <div class="bg-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
     </div>
 
     <!-- Theme Toggle -->
-    <button class="theme-toggle" onclick="toggleTheme()" title="เปลี่ยนโหมดมืด/สว่าง">
-        <i class="fa-solid fa-moon"></i>
+    <button
+      class="theme-toggle"
+      onclick="toggleTheme()"
+      title="เปลี่ยนโหมดมืด/สว่าง"
+    >
+      <i class="fa-solid fa-moon"></i>
     </button>
 
     <div class="container">
-        <header>
-            <h1><i class="fa-solid fa-users-viewfinder"></i> ระบบจัดการองค์กร</h1>
-            <p>Organization Management System</p>
-        </header>
+      <header>
+        <h1><i class="fa-solid fa-users-viewfinder"></i> ระบบจัดการองค์กร</h1>
+        <p>Organization Management System</p>
+      </header>
 
-        <div id="stats-section"></div>
+      <div id="stats-section"></div>
 
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('members')">
-                <i class="fa-solid fa-user-group"></i> สมาชิก
-            </button>
-            <button class="tab-btn" onclick="switchTab('departments')">
-                <i class="fa-solid fa-building"></i> ฝ่าย/แผนก
-            </button>
-            <button class="tab-btn" onclick="switchTab('issues')">
-                <i class="fa-solid fa-bullhorn"></i> ปัญหาและข้อเสนอแนะ
-            </button>
-            <button class="tab-btn" onclick="switchTab('work')">
-                <i class="fa-solid fa-briefcase"></i> งานและกิจกรรม
-            </button>
-        </div>
+      <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('members')">
+          <i class="fa-solid fa-user-group"></i> สมาชิก
+        </button>
+        <button class="tab-btn" onclick="switchTab('departments')">
+          <i class="fa-solid fa-building"></i> ฝ่าย/แผนก
+        </button>
+        <button class="tab-btn" onclick="switchTab('issues')">
+          <i class="fa-solid fa-bullhorn"></i> ปัญหาและข้อเสนอแนะ
+        </button>
+        <button class="tab-btn" onclick="switchTab('work')">
+          <i class="fa-solid fa-briefcase"></i> งานและกิจกรรม
+        </button>
+      </div>
 
-        <!-- Members Tab -->
-        <div id="members-tab" class="tab-content active">
-            <div class="content-card">
-                <div class="section-header">
-                    <h2 class="section-title">จัดการสมาชิก</h2>
-                    <p class="section-desc">เพิ่มหรือแก้ไขข้อมูลสมาชิกในองค์กรของคุณ</p>
+      <!-- Members Tab -->
+      <div id="members-tab" class="tab-content active">
+        <div class="content-card">
+          <div class="section-header">
+            <h2 class="section-title">จัดการสมาชิก</h2>
+            <p class="section-desc">เพิ่มหรือแก้ไขข้อมูลสมาชิกในองค์กรของคุณ</p>
+          </div>
+
+          <form id="member-form" onsubmit="saveMember(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label
+                  >ชื่อ-นามสกุล
+                  <span style="color: var(--danger)">*</span></label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="member-name"
+                    required
+                    placeholder="ระบุชื่อและนามสกุล"
+                  />
+                  <i class="fa-regular fa-user"></i>
                 </div>
-
-                <form id="member-form" onsubmit="saveMember(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ชื่อ-นามสกุล <span style="color:var(--danger)">*</span></label>
-                            <div class="input-wrapper">
-                                <input type="text" id="member-name" required placeholder="ระบุชื่อและนามสกุล">
-                                <i class="fa-regular fa-user"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>อีเมล</label>
-                            <div class="input-wrapper">
-                                <input type="email" id="member-email" placeholder="เช่น employee@company.com">
-                                <i class="fa-regular fa-envelope"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>เบอร์โทรศัพท์</label>
-                            <div class="input-wrapper">
-                                <input type="tel" id="member-phone" placeholder="ระบุเบอร์โทรศัพท์">
-                                <i class="fa-solid fa-phone"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>ฝ่าย/แผนก</label>
-                            <div class="input-wrapper">
-                                <select id="member-department">
-                                    <option value="">-- กรุณาเลือกฝ่าย --</option>
-                                </select>
-                                <i class="fa-regular fa-building"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>ตำแหน่ง</label>
-                            <div class="input-wrapper">
-                                <input type="text" id="member-position" placeholder="เช่น เจ้าหน้าที่การตลาด">
-                                <i class="fa-solid fa-id-card"></i>
-                            </div>
-                        </div>
-                        <div class="form-group" style="display:flex; align-items:flex-end;">
-                            <label class="checkbox-wrapper" style="width:100%">
-                                <input type="checkbox" id="member-leader">
-                                <span>แต่งตั้งเป็นหัวหน้าฝ่าย</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-save"></i> บันทึกข้อมูล
-                        </button>
-                        <button type="button" class="btn btn-danger" onclick="resetMemberForm()">
-                            <i class="fa-solid fa-rotate-left"></i> ล้างฟอร์ม
-                        </button>
-                    </div>
-                </form>
-
-                <div class="filter-bar">
-                    <div class="input-wrapper" style="flex:1;">
-                        <input type="text" id="member-search" placeholder="ค้นหาจากชื่อหรืออีเมล..."
-                            oninput="filterMembers()">
-                        <i class="fa-solid fa-search"></i>
-                    </div>
-                    <select id="member-filter-dept" onchange="filterMembers()" style="flex:1;">
-                        <option value="">แสดงทุกฝ่าย</option>
-                    </select>
-                    <select id="member-filter-work" onchange="filterMembers()" style="flex:1;">
-                        <option value="all">สถานะงานทั้งหมด</option>
-                        <option value="with-work">มีงานทำ</option>
-                        <option value="no-work">ยังไม่มีงาน</option>
-                    </select>
+              </div>
+              <div class="form-group">
+                <label>อีเมล</label>
+                <div class="input-wrapper">
+                  <input
+                    type="email"
+                    id="member-email"
+                    placeholder="เช่น employee@company.com"
+                  />
+                  <i class="fa-regular fa-envelope"></i>
                 </div>
-
-                <div id="members-list" class="list-container">
-                    <!-- Members will be injected here -->
+              </div>
+              <div class="form-group">
+                <label>เบอร์โทรศัพท์</label>
+                <div class="input-wrapper">
+                  <input
+                    type="tel"
+                    id="member-phone"
+                    placeholder="ระบุเบอร์โทรศัพท์"
+                  />
+                  <i class="fa-solid fa-phone"></i>
                 </div>
+              </div>
+              <div class="form-group">
+                <label>ฝ่าย/แผนก</label>
+                <div class="input-wrapper">
+                  <select id="member-department">
+                    <option value="">-- กรุณาเลือกฝ่าย --</option>
+                  </select>
+                  <i class="fa-regular fa-building"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ตำแหน่ง</label>
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="member-position"
+                    placeholder="เช่น เจ้าหน้าที่การตลาด"
+                  />
+                  <i class="fa-solid fa-id-card"></i>
+                </div>
+              </div>
+              <div
+                class="form-group"
+                style="display: flex; align-items: flex-end"
+              >
+                <label class="checkbox-wrapper" style="width: 100%">
+                  <input type="checkbox" id="member-leader" />
+                  <span>แต่งตั้งเป็นหัวหน้าฝ่าย</span>
+                </label>
+              </div>
             </div>
-        </div>
-
-        <!-- Departments Tab -->
-        <div id="departments-tab" class="tab-content">
-            <div class="content-card">
-                <div class="section-header">
-                    <h2 class="section-title">จัดการแผนก</h2>
-                    <p class="section-desc">สร้างแผนกใหม่และมอบหมายหัวหน้างาน</p>
-                </div>
-
-                <form id="department-form" onsubmit="saveDepartment(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ชื่อแผนก <span style="color:var(--danger)">*</span></label>
-                            <div class="input-wrapper">
-                                <input type="text" id="department-name" required placeholder="ระบุชื่อแผนก">
-                                <i class="fa-solid fa-users-rectangle"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>หัวหน้าแผนก</label>
-                            <div class="input-wrapper">
-                                <select id="department-leader">
-                                    <option value="">-- เลือกหัวหน้า --</option>
-                                </select>
-                                <i class="fa-solid fa-user-tie"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>รายละเอียดเพิ่มเติม</label>
-                        <textarea id="department-description"
-                            placeholder="อธิบายหน้าที่ความรับผิดชอบของแผนกนี้..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-plus-circle"></i> สร้างแผนกใหม่
-                    </button>
-                </form>
-
-                <div style="margin-top:40px;">
-                    <h3 style="margin-bottom:20px; color:#374151;">รายชื่อแผนกทั้งหมด</h3>
-                    <div id="departments-list" class="list-container"></div>
-                </div>
+            <div style="display: flex; gap: 10px">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-save"></i> บันทึกข้อมูล
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                onclick="resetMemberForm()"
+              >
+                <i class="fa-solid fa-rotate-left"></i> ล้างฟอร์ม
+              </button>
             </div>
-        </div>
+          </form>
 
-        <!-- Issues Tab -->
-        <div id="issues-tab" class="tab-content">
-            <div class="content-card">
-                <div class="section-header">
-                    <h2 class="section-title">ศูนย์รับเรื่องร้องเรียน</h2>
-                    <p class="section-desc">แจ้งปัญหาที่พบหรือเสนอแนะแนวทางพัฒนาองค์กร</p>
-                </div>
-
-                <form id="issue-form" onsubmit="saveIssue(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ประเภทเรื่อง <span style="color:var(--danger)">*</span></label>
-                            <div class="input-wrapper">
-                                <select id="issue-type" required>
-                                    <option value="issue">แจ้งปัญหาการใช้งาน</option>
-                                    <option value="suggestion">เสนอแนะข้อคิดเห็น</option>
-                                </select>
-                                <i class="fa-solid fa-tag"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>ผู้แจ้งเรื่อง</label>
-                            <div class="input-wrapper">
-                                <input type="text" id="issue-author" placeholder="ระบุชื่อของคุณ (ไม่บังคับ)">
-                                <i class="fa-solid fa-user-pen"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>หัวข้อเรื่อง <span style="color:var(--danger)">*</span></label>
-                        <input type="text" id="issue-title" required placeholder="สรุปประเด็นสำคัญสั้นๆ">
-                    </div>
-                    <div class="form-group">
-                        <label>รายละเอียด <span style="color:var(--danger)">*</span></label>
-                        <textarea id="issue-description" required
-                            placeholder="อธิบายรายละเอียดให้ชัดเจนเพื่อให้เราแก้ไขได้ถูกต้อง..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-paper-plane"></i> ส่งเรื่อง
-                    </button>
-                </form>
-
-                <div class="filter-bar">
-                    <select id="issue-filter-type" onchange="filterIssues()" style="flex:1;">
-                        <option value="all">ทุกประเภท</option>
-                        <option value="issue">ปัญหา</option>
-                        <option value="suggestion">ข้อเสนอแนะ</option>
-                    </select>
-                    <select id="issue-filter-status" onchange="filterIssues()" style="flex:1;">
-                        <option value="all">ทุกสถานะ</option>
-                        <option value="pending">รอดำเนินการ</option>
-                        <option value="in-progress">กำลังแก้ไข</option>
-                        <option value="resolved">เสร็จสิ้น</option>
-                    </select>
-                </div>
-
-                <div id="issues-list" class="list-container"></div>
+          <div class="filter-bar">
+            <div class="input-wrapper" style="flex: 1">
+              <input
+                type="text"
+                id="member-search"
+                placeholder="ค้นหาจากชื่อหรืออีเมล..."
+                oninput="filterMembers()"
+              />
+              <i class="fa-solid fa-search"></i>
             </div>
+            <select
+              id="member-filter-dept"
+              onchange="filterMembers()"
+              style="flex: 1"
+            >
+              <option value="">แสดงทุกฝ่าย</option>
+            </select>
+            <select
+              id="member-filter-work"
+              onchange="filterMembers()"
+              style="flex: 1"
+            >
+              <option value="all">สถานะงานทั้งหมด</option>
+              <option value="with-work">มีงานทำ</option>
+              <option value="no-work">ยังไม่มีงาน</option>
+            </select>
+          </div>
+
+          <div id="members-list" class="list-container">
+            <!-- Members will be injected here -->
+          </div>
         </div>
+      </div>
 
-        <!-- Work Tab -->
-        <div id="work-tab" class="tab-content">
-            <div class="content-card">
-                <div class="section-header">
-                    <h2 class="section-title">ตารางงานและกิจกรรม</h2>
-                    <p class="section-desc">มอบหมายงานหรือนัดหมายกิจกรรมสำคัญ</p>
+      <!-- Departments Tab -->
+      <div id="departments-tab" class="tab-content">
+        <div class="content-card">
+          <div class="section-header">
+            <h2 class="section-title">จัดการแผนก</h2>
+            <p class="section-desc">สร้างแผนกใหม่และมอบหมายหัวหน้างาน</p>
+          </div>
+
+          <form id="department-form" onsubmit="saveDepartment(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label
+                  >ชื่อแผนก <span style="color: var(--danger)">*</span></label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="department-name"
+                    required
+                    placeholder="ระบุชื่อแผนก"
+                  />
+                  <i class="fa-solid fa-users-rectangle"></i>
                 </div>
-
-                <form id="activity-form" onsubmit="saveActivity(event)">
-                    <input type="hidden" id="activity-id">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>ชื่องาน/กิจกรรม <span style="color:var(--danger)">*</span></label>
-                            <div class="input-wrapper">
-                                <input type="text" id="activity-name" required placeholder="ระบุชื่องาน">
-                                <i class="fa-solid fa-list-check"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>วันที่นัดหมาย <span style="color:var(--danger)">*</span></label>
-                            <div class="input-wrapper">
-                                <input type="date" id="activity-date" required>
-                                <i class="fa-regular fa-calendar-days"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>ผู้มอบหมาย (หัวหน้า)</label>
-                            <div class="input-wrapper">
-                                <select id="activity-creator">
-                                    <option value="">-- เลือกผู้มอบหมาย --</option>
-                                </select>
-                                <i class="fa-solid fa-user-clock"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>รายละเอียด</label>
-                        <textarea id="activity-description" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>เลือกผู้เข้าร่วม <span style="color:var(--danger)">*</span></label>
-                        <div
-                            style="background:#f9fafb; border:2px solid #e5e7eb; border-radius:12px; padding:15px; max-height:200px; overflow-y:auto;">
-                            <div id="activity-participants-checkbox">
-                                <!-- Checkboxes -->
-                            </div>
-                        </div>
-                        <p style="font-size:0.85rem; color:#6b7280; margin-top:5px;">
-                            <i class="fa-solid fa-circle-info"></i> เลือกรายชื่อคนที่ต้องเข้าร่วมงานนี้
-                        </p>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa-solid fa-calendar-plus"></i> สร้างกิจกรรม
-                        </button>
-                        <button type="button" class="btn btn-warning" onclick="resetActivityForm()">
-                            <i class="fa-solid fa-redo"></i> รีเซ็ต
-                        </button>
-                    </div>
-                </form>
-
-                <div class="filter-bar">
-                    <div class="input-wrapper" style="flex:2;">
-                        <input type="text" id="activity-search" placeholder="ค้นหากิจกรรม..."
-                            oninput="filterActivities()">
-                        <i class="fa-solid fa-search"></i>
-                    </div>
-                    <div class="input-wrapper" style="flex:1;">
-                        <input type="date" id="activity-filter-date" onchange="filterActivities()">
-                        <i class="fa-regular fa-calendar"></i>
-                    </div>
+              </div>
+              <div class="form-group">
+                <label>หัวหน้าแผนก</label>
+                <div class="input-wrapper">
+                  <select id="department-leader">
+                    <option value="">-- เลือกหัวหน้า --</option>
+                  </select>
+                  <i class="fa-solid fa-user-tie"></i>
                 </div>
-
-                <div id="activities-list" class="list-container"></div>
+              </div>
             </div>
+            <div class="form-group">
+              <label>รายละเอียดเพิ่มเติม</label>
+              <textarea
+                id="department-description"
+                placeholder="อธิบายหน้าที่ความรับผิดชอบของแผนกนี้..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-plus-circle"></i> สร้างแผนกใหม่
+            </button>
+          </form>
+
+          <div style="margin-top: 40px">
+            <h3 style="margin-bottom: 20px; color: #374151">
+              รายชื่อแผนกทั้งหมด
+            </h3>
+            <div id="departments-list" class="list-container"></div>
+          </div>
         </div>
+      </div>
+
+      <!-- Issues Tab -->
+      <div id="issues-tab" class="tab-content">
+        <div class="content-card">
+          <div class="section-header">
+            <h2 class="section-title">ศูนย์รับเรื่องร้องเรียน</h2>
+            <p class="section-desc">
+              แจ้งปัญหาที่พบหรือเสนอแนะแนวทางพัฒนาองค์กร
+            </p>
+          </div>
+
+          <form id="issue-form" onsubmit="saveIssue(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label
+                  >ประเภทเรื่อง
+                  <span style="color: var(--danger)">*</span></label
+                >
+                <div class="input-wrapper">
+                  <select id="issue-type" required>
+                    <option value="issue">แจ้งปัญหาการใช้งาน</option>
+                    <option value="suggestion">เสนอแนะข้อคิดเห็น</option>
+                  </select>
+                  <i class="fa-solid fa-tag"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ผู้แจ้งเรื่อง</label>
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="issue-author"
+                    placeholder="ระบุชื่อของคุณ (ไม่บังคับ)"
+                  />
+                  <i class="fa-solid fa-user-pen"></i>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label
+                >หัวข้อเรื่อง <span style="color: var(--danger)">*</span></label
+              >
+              <input
+                type="text"
+                id="issue-title"
+                required
+                placeholder="สรุปประเด็นสำคัญสั้นๆ"
+              />
+            </div>
+            <div class="form-group">
+              <label
+                >รายละเอียด <span style="color: var(--danger)">*</span></label
+              >
+              <textarea
+                id="issue-description"
+                required
+                placeholder="อธิบายรายละเอียดให้ชัดเจนเพื่อให้เราแก้ไขได้ถูกต้อง..."
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-paper-plane"></i> ส่งเรื่อง
+            </button>
+          </form>
+
+          <div class="filter-bar">
+            <select
+              id="issue-filter-type"
+              onchange="filterIssues()"
+              style="flex: 1"
+            >
+              <option value="all">ทุกประเภท</option>
+              <option value="issue">ปัญหา</option>
+              <option value="suggestion">ข้อเสนอแนะ</option>
+            </select>
+            <select
+              id="issue-filter-status"
+              onchange="filterIssues()"
+              style="flex: 1"
+            >
+              <option value="all">ทุกสถานะ</option>
+              <option value="pending">รอดำเนินการ</option>
+              <option value="in-progress">กำลังแก้ไข</option>
+              <option value="resolved">เสร็จสิ้น</option>
+            </select>
+          </div>
+
+          <div id="issues-list" class="list-container"></div>
+        </div>
+      </div>
+
+      <!-- Work Tab -->
+      <div id="work-tab" class="tab-content">
+        <div class="content-card">
+          <div class="section-header">
+            <h2 class="section-title">ตารางงานและกิจกรรม</h2>
+            <p class="section-desc">มอบหมายงานหรือนัดหมายกิจกรรมสำคัญ</p>
+          </div>
+
+          <form id="activity-form" onsubmit="saveActivity(event)">
+            <input type="hidden" id="activity-id" />
+            <div class="form-grid">
+              <div class="form-group">
+                <label
+                  >ชื่องาน/กิจกรรม
+                  <span style="color: var(--danger)">*</span></label
+                >
+                <div class="input-wrapper">
+                  <input
+                    type="text"
+                    id="activity-name"
+                    required
+                    placeholder="ระบุชื่องาน"
+                  />
+                  <i class="fa-solid fa-list-check"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label
+                  >วันที่นัดหมาย
+                  <span style="color: var(--danger)">*</span></label
+                >
+                <div class="input-wrapper">
+                  <input type="date" id="activity-date" required />
+                  <i class="fa-regular fa-calendar-days"></i>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>ผู้มอบหมาย (หัวหน้า)</label>
+                <div class="input-wrapper">
+                  <select id="activity-creator">
+                    <option value="">-- เลือกผู้มอบหมาย --</option>
+                  </select>
+                  <i class="fa-solid fa-user-clock"></i>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>รายละเอียด</label>
+              <textarea
+                id="activity-description"
+                placeholder="รายละเอียดเพิ่มเติม..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label
+                >เลือกผู้เข้าร่วม
+                <span style="color: var(--danger)">*</span></label
+              >
+              <div
+                style="
+                  background: #f9fafb;
+                  border: 2px solid #e5e7eb;
+                  border-radius: 12px;
+                  padding: 15px;
+                  max-height: 200px;
+                  overflow-y: auto;
+                "
+              >
+                <div id="activity-participants-checkbox">
+                  <!-- Checkboxes -->
+                </div>
+              </div>
+              <p style="font-size: 0.85rem; color: #6b7280; margin-top: 5px">
+                <i class="fa-solid fa-circle-info"></i>
+                เลือกรายชื่อคนที่ต้องเข้าร่วมงานนี้
+              </p>
+            </div>
+            <div style="display: flex; gap: 10px">
+              <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-calendar-plus"></i> สร้างกิจกรรม
+              </button>
+              <button
+                type="button"
+                class="btn btn-warning"
+                onclick="resetActivityForm()"
+              >
+                <i class="fa-solid fa-redo"></i> รีเซ็ต
+              </button>
+            </div>
+          </form>
+
+          <div class="filter-bar">
+            <div class="input-wrapper" style="flex: 2">
+              <input
+                type="text"
+                id="activity-search"
+                placeholder="ค้นหากิจกรรม..."
+                oninput="filterActivities()"
+              />
+              <i class="fa-solid fa-search"></i>
+            </div>
+            <div class="input-wrapper" style="flex: 1">
+              <input
+                type="date"
+                id="activity-filter-date"
+                onchange="filterActivities()"
+              />
+              <i class="fa-regular fa-calendar"></i>
+            </div>
+          </div>
+
+          <div id="activities-list" class="list-container"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Container -->
@@ -325,18 +451,17 @@
 
     <!-- View Modal (Premium) -->
     <div id="view-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">หัวข้อ</h2>
-                <div class="close" onclick="closeModal()">
-                    <i class="fa-solid fa-times"></i>
-                </div>
-            </div>
-            <div id="modal-body" class="modal-body"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title">หัวข้อ</h2>
+          <div class="close" onclick="closeModal()">
+            <i class="fa-solid fa-times"></i>
+          </div>
         </div>
+        <div id="modal-body" class="modal-body"></div>
+      </div>
     </div>
 
     <script src="app.js"></script>
-</body>
-
+  </body>
 </html>

@@ -47,6 +47,25 @@ async function writeJSONFile(filename, data) {
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
+// บันทึกประวัติการแก้ไข
+ async function logHistory(action, type, name, detail = '') {
+    try {
+        const history = await readJSONFile('history.json') || [];
+        history.unshift({
+            id: Date.now().toString(),
+            action,   // 'create' | 'update' | 'delete'
+            type,     // 'member' | 'department' | 'activity'
+            name,
+            detail,
+            timestamp: new Date().toISOString()
+        });
+        // เก็บแค่ 500 รายการล่าสุด
+        await writeJSONFile('history.json', history.slice(0, 500));
+    } catch (e) {
+        console.error('History log error:', e.message);
+    }
+}
+
 // ========== API Routes ==========
 
 // === สมาชิก (Members) ===
@@ -93,6 +112,7 @@ app.post('/api/members', async (req, res) => {
         };
         members.push(newMember);
         await writeJSONFile('members.json', members);
+        await logHistory('create', 'member', newMember.name, `ตำแหน่ง: ${newMember.position || '-'}`);
         res.json({ success: true, data: newMember });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -108,10 +128,11 @@ app.put('/api/members/:id', async (req, res) => {
             members[index] = {
                 ...members[index],
                 ...req.body,
-                id: req.params.id, // ไม่ให้เปลี่ยน ID
-                workCount: members[index].workCount // ไม่ให้เปลี่ยน workCount ตรงนี้
+                id: req.params.id,
+                workCount: members[index].workCount
             };
             await writeJSONFile('members.json', members);
+            await logHistory('update', 'member', members[index].name, `แก้ไขข้อมูลสมาชิก`);
             res.json({ success: true, data: members[index] });
         } else {
             res.status(404).json({ success: false, error: 'Member not found' });
@@ -125,8 +146,10 @@ app.put('/api/members/:id', async (req, res) => {
 app.delete('/api/members/:id', async (req, res) => {
     try {
         const members = await readJSONFile('members.json') || [];
+        const member = members.find(m => m.id === req.params.id);
         const filtered = members.filter(m => m.id !== req.params.id);
         await writeJSONFile('members.json', filtered);
+        if (member) await logHistory('delete', 'member', member.name, 'ลบออกจากระบบ');
         res.json({ success: true, message: 'Member deleted successfully' });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -183,32 +206,26 @@ app.post('/api/activities', async (req, res) => {
     try {
         const activities = await readJSONFile('activities.json') || [];
         const members = await readJSONFile('members.json') || [];
-
         const newActivity = {
             id: Date.now().toString(),
             name: req.body.name,
             description: req.body.description || '',
             date: req.body.date || new Date().toISOString().split('T')[0],
             creatorId: req.body.creatorId || null,
+            status: req.body.status || 'pending',
             participantIds: req.body.participantIds || [],
             createdAt: new Date().toISOString()
         };
-
         activities.push(newActivity);
         await writeJSONFile('activities.json', activities);
-
-        // อัปเดตจำนวนงานของสมาชิกที่เข้าร่วม
         if (newActivity.participantIds.length > 0) {
             newActivity.participantIds.forEach(memberId => {
                 const member = members.find(m => m.id === memberId);
-                if (member) {
-                    member.workCount = (member.workCount || 0) + 1;
-                    member.lastWorkDate = new Date().toISOString();
-                }
+                if (member) { member.workCount = (member.workCount || 0) + 1; member.lastWorkDate = new Date().toISOString(); }
             });
             await writeJSONFile('members.json', members);
         }
-
+        await logHistory('create', 'activity', newActivity.name, `วันที่: ${newActivity.date} | ผู้เข้าร่วม: ${newActivity.participantIds.length} คน`);
         res.json({ success: true, data: newActivity });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -221,42 +238,26 @@ app.put('/api/activities/:id', async (req, res) => {
         const activities = await readJSONFile('activities.json') || [];
         const members = await readJSONFile('members.json') || [];
         const index = activities.findIndex(a => a.id === req.params.id);
-
         if (index !== -1) {
             const oldActivity = activities[index];
             const oldParticipantIds = oldActivity.participantIds || [];
             const newParticipantIds = req.body.participantIds || [];
-
-            // ลบจำนวนงานของสมาชิกที่ออกจากการเข้าร่วม
             oldParticipantIds.forEach(memberId => {
                 if (!newParticipantIds.includes(memberId)) {
                     const member = members.find(m => m.id === memberId);
-                    if (member && member.workCount > 0) {
-                        member.workCount = member.workCount - 1;
-                    }
+                    if (member && member.workCount > 0) member.workCount -= 1;
                 }
             });
-
-            // เพิ่มจำนวนงานของสมาชิกที่เข้าร่วมใหม่
             newParticipantIds.forEach(memberId => {
                 if (!oldParticipantIds.includes(memberId)) {
                     const member = members.find(m => m.id === memberId);
-                    if (member) {
-                        member.workCount = (member.workCount || 0) + 1;
-                        member.lastWorkDate = new Date().toISOString();
-                    }
+                    if (member) { member.workCount = (member.workCount || 0) + 1; member.lastWorkDate = new Date().toISOString(); }
                 }
             });
-
-            activities[index] = {
-                ...activities[index],
-                ...req.body,
-                id: req.params.id
-            };
-
+            activities[index] = { ...activities[index], ...req.body, id: req.params.id };
             await writeJSONFile('activities.json', activities);
             await writeJSONFile('members.json', members);
-
+            await logHistory('update', 'activity', activities[index].name, `สถานะ: ${req.body.status || oldActivity.status || '-'}`);
             res.json({ success: true, data: activities[index] });
         } else {
             res.status(404).json({ success: false, error: 'Activity not found' });
@@ -272,21 +273,17 @@ app.delete('/api/activities/:id', async (req, res) => {
         const activities = await readJSONFile('activities.json') || [];
         const members = await readJSONFile('members.json') || [];
         const activity = activities.find(a => a.id === req.params.id);
-
         if (activity) {
-            // ลบจำนวนงานของสมาชิกที่เข้าร่วมกิจกรรมนี้
             if (activity.participantIds && activity.participantIds.length > 0) {
                 activity.participantIds.forEach(memberId => {
                     const member = members.find(m => m.id === memberId);
-                    if (member && member.workCount > 0) {
-                        member.workCount = member.workCount - 1;
-                    }
+                    if (member && member.workCount > 0) member.workCount -= 1;
                 });
                 await writeJSONFile('members.json', members);
             }
-
             const filtered = activities.filter(a => a.id !== req.params.id);
             await writeJSONFile('activities.json', filtered);
+            await logHistory('delete', 'activity', activity.name, `วันที่: ${activity.date}`);
             res.json({ success: true, message: 'Activity deleted successfully' });
         } else {
             res.status(404).json({ success: false, error: 'Activity not found' });
@@ -321,6 +318,7 @@ app.post('/api/departments', async (req, res) => {
         };
         departments.push(newDept);
         await writeJSONFile('departments.json', departments);
+        await logHistory('create', 'department', newDept.name, 'สร้างแผนกใหม่');
         res.json({ success: true, data: newDept });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -339,6 +337,7 @@ app.put('/api/departments/:id', async (req, res) => {
                 id: req.params.id
             };
             await writeJSONFile('departments.json', departments);
+            await logHistory('update', 'department', departments[index].name, 'แก้ไขข้อมูลแผนก');
             res.json({ success: true, data: departments[index] });
         } else {
             res.status(404).json({ success: false, error: 'Department not found' });
@@ -352,9 +351,74 @@ app.put('/api/departments/:id', async (req, res) => {
 app.delete('/api/departments/:id', async (req, res) => {
     try {
         const departments = await readJSONFile('departments.json') || [];
+        const dept = departments.find(d => d.id === req.params.id);
         const filtered = departments.filter(d => d.id !== req.params.id);
         await writeJSONFile('departments.json', filtered);
+        if (dept) await logHistory('delete', 'department', dept.name, 'ลบออกจากระบบ');
         res.json({ success: true, message: 'Department deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// === ประวัติการแก้ไข (History) ===
+app.get('/api/history', async (req, res) => {
+    try {
+        const history = await readJSONFile('history.json') || [];
+        res.json({ success: true, data: history });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.delete('/api/history', async (req, res) => {
+    try {
+        await writeJSONFile('history.json', []);
+        res.json({ success: true, message: 'History cleared' });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// === แชทกลุ่ม (Group Chat) ===
+
+// ดึงข้อความทั้งหมด (100 ล่าสุด)
+app.get('/api/chat', async (req, res) => {
+    try {
+        const msgs = await readJSONFile('chat.json') || [];
+        res.json({ success: true, data: msgs.slice(-100) });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ส่งข้อความใหม่
+app.post('/api/chat', async (req, res) => {
+    try {
+        const msgs = await readJSONFile('chat.json') || [];
+        const newMsg = {
+            id:        Date.now().toString(),
+            sender:    req.body.sender   || 'ไม่ระบุชื่อ',
+            text:      req.body.text     || '',
+            color:     req.body.color    || '#10b981',
+            timestamp: new Date().toISOString()
+        };
+        if (!newMsg.text.trim()) return res.status(400).json({ success: false, error: 'ข้อความว่าง' });
+        msgs.push(newMsg);
+        // เก็บแค่ 500 ข้อความล่าสุด
+        await writeJSONFile('chat.json', msgs.slice(-500));
+        res.json({ success: true, data: newMsg });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// ลบข้อความ
+app.delete('/api/chat/:id', async (req, res) => {
+    try {
+        const msgs = await readJSONFile('chat.json') || [];
+        await writeJSONFile('chat.json', msgs.filter(m => m.id !== req.params.id));
+        res.json({ success: true });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
